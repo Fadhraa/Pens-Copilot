@@ -5,13 +5,13 @@
   /** @type {{ onNext?: (data: Record<string, any>) => void, onNavigate?: (view: string) => void, initialData?: Record<string, any> }} */
   let { onNext = () => {}, onNavigate = () => {}, initialData = {} } = $props();
 
-  let name = $state('Fadhra Dzaki');
-  let nrp = $state('3124600001');
+  let name = $state('');
+  let nrp = $state('');
   let prodi = $state('D4 Teknik Informatika');
-  let email = $state('fadhradzaki.s@gmail.com');
-  let password = $state('password123');
-  let confirmPassword = $state('password123');
-  let agreeTerms = $state(true);
+  let email = $state('');
+  let password = $state('');
+  let confirmPassword = $state('');
+  let agreeTerms = $state(false);
   
   let showPassword = $state(false);
   let showConfirm = $state(false);

@@ -5,9 +5,9 @@
   /** @type {{ onNavigate?: (view: string) => void, onLogin?: (data: Record<string, any>) => void }} */
   let { onNavigate = () => {}, onLogin = () => {} } = $props();
 
-  let email = $state("fadhradzaki.s@gmail.com");
-  let password = $state("password123");
-  let rememberMe = $state(true);
+  let email = $state("");
+  let password = $state("");
+  let rememberMe = $state(false);
   let showPassword = $state(false);
   let errorMsg = $state("");
   let isSubmitting = $state(false);
