@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Michroma", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+
+  /* Official Figma Palette Tokens */
+  --color-pens-orange-primary: #FF8500;
+  --color-pens-orange-vivid: #FF6A00;
+  --color-pens-orange-light: #FFC789;
+  --color-pens-peach: #FFC789;
+
+  /* Figma Linear Gradient Stops for Canvas */
+  --color-pens-blue-dark: #02389E;
+  --color-pens-blue-mid: #035AB1;
+  --color-pens-blue-bright: #018FE6;
+
+  /* Sidebar Light Theme Colors from Screenshot */
+  --color-pens-sidebar-bg: #EAEFF5;
+  --color-pens-sidebar-card: #DAE2EC;
+  --color-pens-sidebar-border: #C8D3E2;
+
+  --color-pens-dark: #080F1E;
+  --color-pens-darker: #050A14;
+  --color-pens-navy: #0B1528;
+  --color-pens-card: #0F172A;
+  --color-pens-card-border: #1E293B;
+  --color-pens-black: #000000;
+  
+  --color-pens-ice: #E8F0FA;
+  --color-pens-white: #FFFFFF;
+  --color-pens-gray-light: #CECECE;
+  --color-pens-gray-silver: #ADADAD;
+  --color-pens-gray-medium: #8C8C8C;
+  --color-pens-gray-dark: #606060;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  background-color: #02389E;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+}
+
+.font-michroma {
+  font-family: var(--font-display);
+}
+
+/* Figma Canvas Gradient (Stops: 14% #02389E, 58% #035AB1, 100% #018FE6) */
+.bg-pens-canvas-gradient {
+  background-color: #02389E;
+  background-image: linear-gradient(160deg, #02389E 14%, #035AB1 58%, #018FE6 100%);
+}
+
+/* Bulletproof Layered Figma Grid + Blue Gradient for Auth Left Banner */
+.pens-hero-pattern {
+  background-color: #02389E !important;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(160deg, #02389E 14%, #035AB1 58%, #018FE6 100%) !important;
+  background-size: 42px 42px, 42px 42px, 100% 100% !important;
+  background-repeat: repeat, repeat, no-repeat !important;
+}
+
+/* Figma White Grid overlay */
+.bg-pens-figma-grid {
+  background-size: 42px 42px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+/* Blueprint engineering grid pattern overlay (32px x 32px) */
+.blueprint-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Soft card shadow */
+.card-elevation {
+  box-shadow: 0 24px 48px -12px rgba(2, 56, 158, 0.14), 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+/* Glassmorphism utility */
+.pens-glass {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *:not([data-aos]), *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Base interaction affordances and keyboard focus visibility */
+a[href],
+button:not(:disabled),
+select:not(:disabled),
+summary,
+label[for],
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
+@layer base {
+  :focus-visible {
+    outline: 2px solid #FF6A00;
+    outline-offset: 2px;
+  }
+}
