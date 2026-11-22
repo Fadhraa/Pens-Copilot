@@ -1,25 +1,26 @@
-# ⚡ PENS Copilot — Asisten Akademik & Pengingat ETHOL Mahasiswa PENS
+# PENS Copilot — Asisten Akademik & Pengingat ETHOL Mahasiswa PENS
 
 > **Tugas Susah Bukan Halangan! kerjAIn aja.**  
-> Platform terintegrasi pengingat presensi kuliah ETHOL, manajemen tugas berbasis deadline, dan asisten AI akademik dengan kapabilitas RAG (*Retrieval-Augmented Generation*) berbasis dokumen diktat/modul khusus mahasiswa Politeknik Elektronika Negeri Surabaya (PENS).
+> Platform terintegrasi pengingat presensi kuliah ETHOL, manajemen tugas berbasis deadline, dan asisten AI akademik dengan kapabilitas RAG (_Retrieval-Augmented Generation_) berbasis dokumen diktat/modul khusus mahasiswa Politeknik Elektronika Negeri Surabaya (PENS).
 
 ---
 
-## 📌 1. Tentang Aplikasi
+## 1. Tentang Aplikasi
 
-Mahasiswa vokasi teknik PENS menghadapi jadwal perkuliahan laboratorium yang sangat padat, laporan resmi (lapres) mingguan, dan presensi sistem akademik ETHOL yang memiliki tenggat ketat. Keterlambatan presensi berakibat pengurangan presensi hadir (*alpha*), sementara penumpukan tugas praktikum sering memicu kelelahan (*burnout*).
+Mahasiswa vokasi teknik PENS menghadapi jadwal perkuliahan laboratorium yang sangat padat, laporan resmi (lapres) mingguan, dan presensi sistem akademik ETHOL yang memiliki tenggat ketat. Keterlambatan presensi berakibat pengurangan presensi hadir (_alpha_), sementara penumpukan tugas praktikum sering memicu kelelahan (_burnout_).
 
-**PENS Copilot** hadir sebagai solusi terpusat (*all-in-one academic copilot*) yang menyelesaikan tiga tantangan utama tersebut:
+**PENS Copilot** hadir sebagai solusi terpusat (_all-in-one academic copilot_) yang menyelesaikan tiga tantangan utama tersebut:
+
 1. **Otomasi Jadwal & Ekstraksi KRS:** Mahasiswa cukup mengunggah foto/PDF KRS; AI otomatis mengekstrak jadwal, ruangan, jam, dan dosen pengampu ke database tanpa input manual yang melelahkan.
-2. **Pengingat Presensi ETHOL Multi-Channel:** Sistem mendeteksi waktu kelas secara presisi di zona waktu WIB, memicu peringatan web notification (*toast banner* interaktif) serta mengirimkan email darurat via Gmail SMTP pada H-15 menit dan 3 interval selama perkuliahan berlangsung.
+2. **Pengingat Presensi ETHOL Multi-Channel:** Sistem mendeteksi waktu kelas secara presisi di zona waktu WIB, memicu peringatan web notification (_toast banner_ interaktif) serta mengirimkan email darurat via Gmail SMTP pada H-15 menit dan 3 interval selama perkuliahan berlangsung.
 3. **Manajemen Tugas & Prioritas:** Pelacakan deadline tugas kuliah terintegrasi dengan penanda urgensi khusus untuk tugas yang mendekati batas waktu (< 48 jam).
-4. **Chat Asisten AI Berbasis Materi Kuliah (RAG):** Mahasiswa dapat mengunggah slide atau modul praktikum (PDF, Word DOCX, TXT, Markdown). Sistem mengekstrak teks, memecahnya menjadi potongan (*chunks*), membuat vektor *embedding* 768 dimensi, dan menyimpannya di Supabase `pgvector`. AI menjawab pertanyaan berbasis isi materi kuliah dengan latensi rendah (`< 1.7s`).
-5. **Multi-Block Hybrid Chat UI:** Balasan asisten AI dapat mengombinasikan teks penjelasan Markdown, ringkasan poin, blok kode dengan tombol salin, kotak catatan belajar (*callout*), serta kartu interaktif manipulasi jadwal dan tugas secara bersamaan dalam satu bubble percakapan.
+4. **Chat Asisten AI Berbasis Materi Kuliah (RAG):** Mahasiswa dapat mengunggah slide atau modul praktikum (PDF, Word DOCX, TXT, Markdown). Sistem mengekstrak teks, memecahnya menjadi potongan (_chunks_), membuat vektor _embedding_ 768 dimensi, dan menyimpannya di Supabase `pgvector`. AI menjawab pertanyaan berbasis isi materi kuliah dengan latensi rendah (`< 1.7s`).
+5. **Multi-Block Hybrid Chat UI:** Balasan asisten AI dapat mengombinasikan teks penjelasan Markdown, ringkasan poin, blok kode dengan tombol salin, kotak catatan belajar (_callout_), serta kartu interaktif manipulasi jadwal dan tugas secara bersamaan dalam satu bubble percakapan.
 6. **Model Bisnis & Kuota Berlangganan (Pro Tier):** Showcase aspek bisnis Rp 50.000 / bulan dengan fitur unggulan AI Quiz Simulator, bot WhatsApp/Telegram, dan unlimited RAG, disertai pembatasan kuota yang adil untuk Free Tier (maksimal 3 dokumen dan 10 chat RAG/hari).
 
 ---
 
-## 🏗️ 2. Arsitektur & Konsep Teknis
+## 2. Arsitektur & Konsep Teknis
 
 Aplikasi dibangun dengan arsitektur **Decoupled Client-Server**:
 
@@ -52,33 +53,34 @@ Aplikasi dibangun dengan arsitektur **Decoupled Client-Server**:
 └───────────────────────────────┘
 ```
 
-### Alur Kerja RAG (*Retrieval-Augmented Generation*):
+### Alur Kerja RAG (_Retrieval-Augmented Generation_):
+
 1. **Ingest Phase:** File PDF/Word diunggah ke backend `POST /api/rag/ingest`. Teks diekstrak menggunakan parser lokal (`pdf-parse` v2 dan `mammoth`), lalu dipecah menjadi potongan teks overlapping (~700 karakter dengan 100 karakter overlap).
-2. **Vectorization:** Potongan teks dikirim secara paralel terkontrol (*concurrency pool*) ke Google Gemini Embedding API untuk menghasilkan vektor 768 dimensi.
+2. **Vectorization:** Potongan teks dikirim secara paralel terkontrol (_concurrency pool_) ke Google Gemini Embedding API untuk menghasilkan vektor 768 dimensi.
 3. **Database Indexing:** Vektor disimpan di tabel `document_chunks` PostgreSQL yang memanfaatkan ekstensi `pgvector` dengan indeks IVFFlat / HNSW.
-4. **Query & Retrieval:** Saat mahasiswa bertanya di chat, query diubah menjadi vektor, lalu Supabase mencocokkan kemiripan kosinus (*cosine distance*) dengan fungsi SQL `match_document_chunks`.
+4. **Query & Retrieval:** Saat mahasiswa bertanya di chat, query diubah menjadi vektor, lalu Supabase mencocokkan kemiripan kosinus (_cosine distance_) dengan fungsi SQL `match_document_chunks`.
 5. **Augmented Prompting:** Chunks materi yang paling relevan disisipkan ke dalam system context Google Gemini, menghasilkan jawaban yang akurat berdasarkan materi perkuliahan PENS tanpa halusinasi.
 
 ---
 
-## 🛠️ 3. Teknologi yang Digunakan & Alasan Pemilihannya
+## 3. Teknologi yang Digunakan & Alasan Pemilihannya
 
-| Layer | Teknologi | Alasan Pemilihan & Nilai Tambah |
-| :--- | :--- | :--- |
-| **Frontend Framework** | **Svelte 5 (Runes: `$state`, `$derived`, `$props`)** | **Performa & Ukuran Bundle:** Tidak menggunakan Virtual DOM (VDOM), melainkan dikompilasi langsung menjadi JavaScript murni yang sangat kecil (~126 kB gzip) dan reaktif. Sangat cepat dibuka di jaringan kampus maupun perangkat mobile mahasiswa. |
-| **Styling & Design System** | **Tailwind CSS v4** | **Kecepatan & Konsistensi UI:** Menggunakan engine berbasis Rust terbaru dari Tailwind v4 yang sangat kencang. Memudahkan penerapan palet resmi PENS (Royal Blue, Deep Navy, Electric Blue, dan Safety Orange) sesuai panduan `design.md`. |
-| **Build Tool** | **Vite 8** | **Developer Experience & HMR:** Waktu kompilasi instan (< 1.5 detik untuk 178 modul) dan Hot Module Replacement (HMR) yang mempermudah iterasi antarmuka. |
-| **Backend Runtime** | **Node.js (Native HTTP Server)** | **Ringan & Streaming Friendly:** Menggunakan HTTP server murni tanpa framework berat untuk menjaga konsumsi RAM minimal (< 80 MB pada free tier Render). Sangat stabil dalam menangani Server-Sent Events (SSE) dengan koneksi berdurasi panjang (*keepalive heartbeats*). |
-| **Database & Auth** | **Supabase (PostgreSQL + pgvector)** | **All-in-One Backend-as-a-Service:** Menyediakan autentikasi bawaan, manajemen relasi SQL yang kokoh, sistem keamanan data *Row Level Security (RLS)* per mahasiswa, dan kemampuan pencarian kemiripan vektor (*vector similarity search*) di PostgreSQL tanpa perlu server database vektor terpisah seperti Pinecone. |
-| **AI Model & Embedding** | **Google Gemini (gemini-3.6-flash & text-embedding-004)** | **Latensi Rendah & Kapasitas Token Besar:** Model Flash menawarkan waktu respon sangat cepat (`~0.8s – 1.7s`), dukungan ekstraksi JSON terstruktur (*constrained grammar decoding*), serta kapabilitas analisis multimodal (PDF dan gambar KRS). |
-| **Dokumen Parser** | **pdf-parse & mammoth** | **Ekstraksi Lokal Cepat:** Mengurai PDF dan berkas Microsoft Word `.docx` langsung di dalam memori server tanpa mengirim file ke pihak ketiga, menjaga privasi diktat dan modul praktikum. |
-| **Notifikasi Email** | **Nodemailer (Gmail SMTP)** | **Keterandalan Pengiriman:** Menggunakan jalur SMTP resmi dengan App Password Google, memastikan email pengingat presensi dan deadline tugas masuk langsung ke inbox mahasiswa tanpa terhalang filter spam. |
-| **Deployment Frontend** | **Vercel** | **Edge CDN Global:** Menyediakan hosting statis berkecepatan tinggi dengan integrasi otomatis GitHub, preview deployments, dan konfigurasi rewrite proxy API (`vercel.json`) yang mulus. |
-| **Deployment Backend** | **Render.com (Web Service)** | **Native Long-running Node.js:** Mendukung proses Node.js berkelanjutan dan koneksi streaming SSE tanpa terbentur batas waktu pendek (*execution timeout* 10 detik) seperti pada serverless function standar. |
+| Layer                       | Teknologi                                                 | Alasan Pemilihan & Nilai Tambah                                                                                                                                                                                                                                                                                        |
+| :-------------------------- | :-------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend Framework**      | **Svelte 5 (Runes: `$state`, `$derived`, `$props`)**      | **Performa & Ukuran Bundle:** Tidak menggunakan Virtual DOM (VDOM), melainkan dikompilasi langsung menjadi JavaScript murni yang sangat kecil (~126 kB gzip) dan reaktif. Sangat cepat dibuka di jaringan kampus maupun perangkat mobile mahasiswa.                                                                    |
+| **Styling & Design System** | **Tailwind CSS v4**                                       | **Kecepatan & Konsistensi UI:** Menggunakan engine berbasis Rust terbaru dari Tailwind v4 yang sangat kencang. Memudahkan penerapan palet resmi PENS (Royal Blue, Deep Navy, Electric Blue, dan Safety Orange) sesuai panduan `design.md`.                                                                             |
+| **Build Tool**              | **Vite 8**                                                | **Developer Experience & HMR:** Waktu kompilasi instan (< 1.5 detik untuk 178 modul) dan Hot Module Replacement (HMR) yang mempermudah iterasi antarmuka.                                                                                                                                                              |
+| **Backend Runtime**         | **Node.js (Native HTTP Server)**                          | **Ringan & Streaming Friendly:** Menggunakan HTTP server murni tanpa framework berat untuk menjaga konsumsi RAM minimal (< 80 MB pada free tier Render). Sangat stabil dalam menangani Server-Sent Events (SSE) dengan koneksi berdurasi panjang (_keepalive heartbeats_).                                             |
+| **Database & Auth**         | **Supabase (PostgreSQL + pgvector)**                      | **All-in-One Backend-as-a-Service:** Menyediakan autentikasi bawaan, manajemen relasi SQL yang kokoh, sistem keamanan data _Row Level Security (RLS)_ per mahasiswa, dan kemampuan pencarian kemiripan vektor (_vector similarity search_) di PostgreSQL tanpa perlu server database vektor terpisah seperti Pinecone. |
+| **AI Model & Embedding**    | **Google Gemini (gemini-3.6-flash & text-embedding-004)** | **Latensi Rendah & Kapasitas Token Besar:** Model Flash menawarkan waktu respon sangat cepat (`~0.8s – 1.7s`), dukungan ekstraksi JSON terstruktur (_constrained grammar decoding_), serta kapabilitas analisis multimodal (PDF dan gambar KRS).                                                                       |
+| **Dokumen Parser**          | **pdf-parse & mammoth**                                   | **Ekstraksi Lokal Cepat:** Mengurai PDF dan berkas Microsoft Word `.docx` langsung di dalam memori server tanpa mengirim file ke pihak ketiga, menjaga privasi diktat dan modul praktikum.                                                                                                                             |
+| **Notifikasi Email**        | **Nodemailer (Gmail SMTP)**                               | **Keterandalan Pengiriman:** Menggunakan jalur SMTP resmi dengan App Password Google, memastikan email pengingat presensi dan deadline tugas masuk langsung ke inbox mahasiswa tanpa terhalang filter spam.                                                                                                            |
+| **Deployment Frontend**     | **Vercel**                                                | **Edge CDN Global:** Menyediakan hosting statis berkecepatan tinggi dengan integrasi otomatis GitHub, preview deployments, dan konfigurasi rewrite proxy API (`vercel.json`) yang mulus.                                                                                                                               |
+| **Deployment Backend**      | **Render.com (Web Service)**                              | **Native Long-running Node.js:** Mendukung proses Node.js berkelanjutan dan koneksi streaming SSE tanpa terbentur batas waktu pendek (_execution timeout_ 10 detik) seperti pada serverless function standar.                                                                                                          |
 
 ---
 
-## 📂 4. Struktur Direktori Proyek
+## 4. Struktur Direktori Proyek
 
 ```
 final/
@@ -112,14 +114,16 @@ final/
 
 ---
 
-## 🚀 5. Panduan Instalasi & Menjalankan di Lokal
+## 5. Panduan Instalasi & Menjalankan di Lokal
 
 ### Prasyarat
+
 - Node.js versi 18 atau lebih baru.
 - Akun Supabase (untuk database dan autentikasi).
 - Google Gemini API Key.
 
 ### 1. Kloning Repository & Instal Dependensi
+
 ```bash
 git clone https://github.com/Fadhraa/Pens-Copilot.git
 cd Pens-Copilot
@@ -127,11 +131,15 @@ npm install
 ```
 
 ### 2. Konfigurasi Environment Variables
+
 Salin berkas contoh `.env.example` menjadi `.env`:
+
 ```bash
 cp .env.example .env
 ```
+
 Isi variabel berikut:
+
 ```env
 # Gemini AI
 GOOGLE_API_KEY=AIzaSy...
@@ -152,31 +160,37 @@ PORT=3001
 ```
 
 ### 3. Inisialisasi Database
+
 Jalankan isi berkas [supabase/schema.sql](supabase/schema.sql) di **Supabase Dashboard &rarr; SQL Editor** untuk membuat tabel profil, jadwal, tugas, histori percakapan, dan embedding RAG.
 
 ### 4. Menjalankan Server Pengembangan
+
 Buka dua tab terminal terpisah:
 
 **Terminal 1 (Backend AI & Notifikasi):**
+
 ```bash
 npm run server
 ```
 
 **Terminal 2 (Frontend Svelte):**
+
 ```bash
 npm run dev
 ```
+
 Buka browser pada alamat `http://localhost:5173`.
 
 ---
 
 ## 🚢 6. Panduan Deployment
 
-* **Backend (Render.com):** Buat Web Service baru, hubungkan dengan repository GitHub ini, gunakan Runtime `Node`, Build Command `npm install`, Start Command `node server/index.js`, dan masukkan Environment Variables.
-* **Frontend (Vercel):** Hubungkan repository ke Vercel. Berkas [vercel.json](vercel.json) akan otomatis meneruskan semua endpoint `/api/*` ke backend Render tanpa kendala CORS.
+- **Backend (Render.com):** Buat Web Service baru, hubungkan dengan repository GitHub ini, gunakan Runtime `Node`, Build Command `npm install`, Start Command `node server/index.js`, dan masukkan Environment Variables.
+- **Frontend (Vercel):** Hubungkan repository ke Vercel. Berkas [vercel.json](vercel.json) akan otomatis meneruskan semua endpoint `/api/*` ke backend Render tanpa kendala CORS.
 
 ---
 
 ## 👥 Tim Pengembang
-* **Pengembang:** Fadhra Dzaki Susanto & Tim 10 UKM Softdev PENS
-* **Afiliasi:** Politeknik Elektronika Negeri Surabaya (PENS)
+
+- **Pengembang:** Fadhra Dzaki Susanto & Tim 10 UKM Softdev PENS
+- **Afiliasi:** Politeknik Elektronika Negeri Surabaya (PENS)
