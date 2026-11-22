@@ -50,10 +50,10 @@
    * }}
    */
   let currentUser = $state({
-    name: 'Fadhra Dzaki',
-    nrp: '3124600001',
+    name: '',
+    nrp: '',
     prodi: 'D4 Teknik Informatika',
-    email: 'fadhradzaki.s@gmail.com',
+    email: '',
     schedules: []
   });
 
