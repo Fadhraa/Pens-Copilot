@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://pens-copilot-backend.onrender.com/api/:path*"
+      "destination": "https://pens-copilot.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",
